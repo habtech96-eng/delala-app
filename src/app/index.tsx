@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SQLite from 'expo-sqlite';
+
 import { Listing } from '../types';
 import { ListingCard } from '../components/ListingCard';
 import { AddListingModal } from '../components/AddListingModal';
@@ -21,7 +22,13 @@ import { AuthModal } from '../components/AuthModal';
 import { Header } from '../components/Header';
 import { BottomNav } from '../components/BottomNav';
 
-const API_URL = 'http://192.168.8.66:5000/api/listings';
+// Local እና Global URL ማቀናበሪያ
+const DEV_API_URL = 'http://192.168.8.66:5000/api/listings'; // Local IP
+const PROD_API_URL = 'https://delala-app-2us1.onrender.com/api/listings';
+
+// አፑ Development ላይ ከሆነ Local፣ Build ሲደረግ ደግሞ Global ይመርጣል
+const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;
+
 const CATEGORIES = ['All', 'House', 'Car', 'Land', 'Other'] as const;
 
 const db = SQLite.openDatabaseSync('chat.db');
@@ -185,11 +192,11 @@ export default function HomeScreen() {
   });
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
       {/* Header */}
       <Header user={user} onOpenAuth={() => setIsAuthVisible(true)} />
 
-      {/* Main Content Area - flex: 1 መስጠቱ ቦታውን በሙሉ እንዲይዝ ያደርገዋል */}
+      {/* Main Content Area */}
       <View style={styles.mainContent}>
         {activeTab === 'profile' && user ? (
           <View style={styles.profileContainer}>
@@ -303,7 +310,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
-  mainContent: { flex: 1 }, // ይህ ዋናው ክፍል ነው (ቦታውን ሙሉ በሙሉ እንዲይዝ)
+  mainContent: { flex: 1 },
   searchBox: { paddingHorizontal: 12, paddingTop: 12, paddingBottom: 6 },
   input: {
     backgroundColor: '#fff',
@@ -325,7 +332,10 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: '#075E54' },
   chipText: { fontSize: 13, fontWeight: 'bold', color: '#444' },
   chipTextActive: { color: '#fff' },
-  listContainer: { paddingHorizontal: 12, paddingBottom: 20, paddingTop: 6 },
+  
+  // የተቀየረው ቦታ፦ paddingBottom ን ከ 20 ወደ 85 ከፍ አድርገነዋል
+  listContainer: { paddingHorizontal: 12, paddingBottom: 85, paddingTop: 6 },
+
   emptyText: { textAlign: 'center', marginTop: 40, color: '#888' },
   profileContainer: { flex: 1, padding: 20, justifyContent: 'center' },
   profileCard: {
